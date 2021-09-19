@@ -1,0 +1,11 @@
+---
+- name: Ansble playbook to test ansible vault
+  hosts: all
+  become : true
+  gather_facts: no
+  tasks:
+  - name: clone a repo 
+    git: 
+      repo: git@github.com:talsont/vault.git
+      dest: /opt/ansadmin/vault
+

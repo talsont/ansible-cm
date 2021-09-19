@@ -1,0 +1,14 @@
+---
+- name: Ansible Playbook to Copy a File
+  hosts: master
+  become: true
+  tasks:
+  - name: Copy a file
+    copy:
+      src: /opt/ansible/index.html
+      dest: /home/ansadmin/test
+      owner: talson
+      group: talson
+      mode: 0644
+
+

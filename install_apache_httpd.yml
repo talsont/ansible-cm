@@ -1,0 +1,39 @@
+---
+- name: this playbook install packages
+  hosts: all
+  become: true
+  tasks:
+  - name: install package
+    yum:
+      name: httpd
+      state: installed
+    when: ansible_facts['distribution'] == "CentOS"
+    tags: install_httpd
+
+  - name: start httpd
+    service:
+      name: httpd
+      state: started
+    when: ansible_facts['distribution'] == "CentOS"
+    tags: start_httpd
+    ignore_errors: yes
+
+  - name: Install apache2
+    apt:
+      name: apache2
+      state: present
+    when: ansible_facts['distribution'] == "Debian"
+    tags: install_apache
+
+  - name: start apache2
+    service:
+      name: apache2
+      state: started
+    when: ansible_facts['distribution'] == "Debian"
+    tags: start_apache
+
+  - name: Copy index.html
+    copy:
+      src: /Users/t.thomas/projects/ansible-projects/index.html
+      dest: /var/www/html/
+      mode: 0666
