@@ -2,5 +2,5 @@
 - name: this playbook install packages
   hosts: all
   become: true
-  roles:
-    - setup-http-apache
+  roles: 
+    - setup-httpd_apache2
