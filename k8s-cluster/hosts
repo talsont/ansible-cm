@@ -1,0 +1,10 @@
+[master]
+192.168.171.90
+
+[worker]
+192.168.171.91
+192.168.171.92
+
+[kube-cluster:children]
+master
+worker

@@ -1,7 +1,7 @@
 ---
 - name: Kubernetes Cluster Setup
-  hosts: all
+  hosts: master
   become: true
   roles:
     - single-node-cluster
-    - multi-node-cluster
+    # - multi-node-cluster

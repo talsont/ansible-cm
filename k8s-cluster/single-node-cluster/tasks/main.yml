@@ -1,2 +1,9 @@
 ---
-# tasks file for single-node-cluster
+- name: Disabling Swap on all nodes
+  shell: swapoff -a
+
+- name: Commenting Swap entries in /etc/fstab
+  replace: 
+    path: /etc/fstab
+    regexp: '(^/.*swap*)'
+    replace: '# \1'
