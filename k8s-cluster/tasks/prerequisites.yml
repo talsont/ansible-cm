@@ -1,9 +1,0 @@
----
-- name: Disabling swap on node
-  shell: swapoff -a
-
-- name: Commenting Swap on entries in /etc/fstab
-  replace:
-    path: /etc/fstab
-    regexp: '(^/.*swap*)'
-    replace: '# \1'
