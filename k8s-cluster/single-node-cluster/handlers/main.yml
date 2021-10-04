@@ -5,3 +5,6 @@
     name: docker
     state: restarted
   become: yes
+
+- name: reboot server
+  shell: reboot

@@ -1,25 +1,4 @@
----
-- name: Disable Swap
-  shell: swapoff -a
-
-- name: Commenting Swap entries in /etc/fstab
-  replace: 
-    path: /etc/fstab
-    regexp: '(^/.*swap*)'
-    replace: '# \1'
-    
-- name: Install apt-transport-https
-  when: ansible_os_family == "Debian"
-  apt: 
-    name: apt-transport-https
-    state: present
-    update_cache: yes
-  
-- name: Add Docker APT GPG key
-  when: ansible_os_family == "Debian"
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-  
+---  
 - name: Add Docker APT repository
   when: ansible_os_family == "Debian"
   apt_repository:
