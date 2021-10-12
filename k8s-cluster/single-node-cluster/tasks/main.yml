@@ -2,8 +2,8 @@
 - name: setup cluster node
   include_tasks: node_setup.yml
 
-# - name: Install Docker Container Engine
-#   include_tasks: docker_setup.yml
+- name: Install Docker Container Engine
+  include_tasks: docker_setup.yml
 
-# - name: Install packages
-#   include_tasks: packages.yml
+- name: Install packages
+  include_tasks: packages.yml

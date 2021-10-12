@@ -1,41 +1,42 @@
 ---
 
-- name: Install apt-transport-https
-  when: ansible_os_family == "Debian"
-  apt: 
-    name: apt-transport-https
-    state: present
-    update_cache: yes
+# - name: Install apt-transport-https
+#   when: ansible_os_family == "Debian"
+#   apt: 
+#     name: apt-transport-https
+#     state: present
+#     update_cache: yes
 
-- name: Install python3-apt package
-  when: ansible_os_family == "Debian"
-  apt:
-    name: python3-apt
-    state: present
-  become: yes
+# - name: Install python3-apt package
+#   when: ansible_os_family == "Debian"
+#   apt:
+#     name: python3-apt
+#     state: present
+#   become: yes 
 
-# s 
+# - name: Add Docker APT GPG key
+#   when: ansible_os_family == "Debian"
+#   apt_key:
+#     url: https://download.docker.com/linux/ubuntu/gpg
 
-- name: Add Docker APT GPG key
-  when: ansible_os_family == "Debian"
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
+# - name: Update repositories cache
+#   when: ansible_facts['os_family'] == "Debian"
+#   apt: update_cache=yes
 
-- name: Update repositories cache
-  when: ansible_facts['os_family'] == "Debian"
-  apt: update_cache=yes
-
-- name: Install build-essential
-  when: ansible_facts['os_family'] == "Debian"
-  apt: name=build-essential state=present
+# - name: Install build-essential
+#   when: ansible_facts['os_family'] == "Debian"
+#   apt: name=build-essential state=present
 
 # - name: Install the libselinux-python package
 #   when: ansible_facts['os_family'] == "Debian"
 #   apt: name=python-selinux state=present
 
-- name: Disable SELinux
-  selinux: 
-    state: disabled
+- name: Put SELinux in permissive mode, logging actions that would be blocked.
+  selinux:
+    policy: targeted
+    state: permissive
+  vars:
+    ansible_python_interpreter: /usr/bin/python 
 
 - name: Disable Swap
   shell: swapoff -a
@@ -45,6 +46,13 @@
     path: /etc/fstab
     regexp: '(^/.*swap*)'
     replace: '# \1'
+
+- name: Letting iptables see bridged traffic
+  copy:
+    src: ./files/k8s.conf
+    dest: 
+
+
 
 
 
