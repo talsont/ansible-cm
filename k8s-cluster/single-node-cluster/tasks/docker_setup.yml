@@ -50,7 +50,7 @@
     name: docker
     state: latest
   vars:
-    ansible_python_interpreter: /usr/bin/python 
+    ansible_python_interpreter: "{{ python }}"
   become: yes
   notify: start docker
 

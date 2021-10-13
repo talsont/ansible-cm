@@ -1,30 +1,9 @@
 ---
 - name: Install Packages on RedHat
-  # when: ansible_facts['os_family'] == "RedHat"
   yum:
-    name: "{{ packages }}"
-  vars:
-    ansible_python_interpreter: /usr/bin/python
-    packages:
-    - wget
-    - vim
-    - unzip
-    - telnet
-    - nfs-utils
+    name: ['wget', 'vim', 'unzip', 'telnet', 'nfs-utils', 'libselinux-python']
+    state: installed
+  # vars:
+  #   ansible_python_interpreter: "{{ python }}"
 
-
-# - name: Install Packages on Debian
-#   when: ansible_facts['os_family'] == "Debian"
-#   apt:
-#     name: "{{ packages }}"
-#     update_cache: yes
-#   vars:
-#     packages:
-#     - wget
-#     - vim
-#     - unzip
-#     - telnet
-#     - nfs-common
-#     - nfs-kernel-server
-  
 
