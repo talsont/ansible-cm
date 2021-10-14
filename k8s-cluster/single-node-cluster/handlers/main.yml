@@ -8,3 +8,11 @@
 
 - name: reboot server
   shell: reboot
+
+
+- name: yum update
+  become: yes
+  yum:
+    name: '*'
+    state: latest
+    exclude: kernel*  

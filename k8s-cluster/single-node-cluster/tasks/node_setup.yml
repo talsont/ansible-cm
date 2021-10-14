@@ -52,6 +52,12 @@
     src: ./files/k8s.conf
     dest: /etc/sysctl.d/k8s.conf
 
+- name: Add Kubernetes Repo
+  copy:
+    src: ./files/kubernetes.repo
+    dest: /etc/yum.repos.d/kubernetes.repo
+  notify: yum update
+
 
 
 
