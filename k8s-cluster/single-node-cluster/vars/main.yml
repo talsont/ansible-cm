@@ -1,4 +1,5 @@
 ---
 centos_os_ver: 7
-python: /usr/bin/python3
+python2: /usr/bin/python2
+python3: /usr/bin/python3
 # vars file for single-node-cluster
