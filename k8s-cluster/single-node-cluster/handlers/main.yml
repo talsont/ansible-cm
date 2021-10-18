@@ -6,13 +6,29 @@
     state: restarted
   become: yes
 
-- name: reboot server
-  shell: reboot
+# Kubeadm Service
 
 
-- name: yum update
+- name: restart kubeadm
   become: yes
-  yum:
-    name: '*'
-    state: latest
-    exclude: kernel*  
+  service:
+    name: kubadm
+    state: restarted
+
+# Kubectl Service
+
+
+- name: restart kubectl
+  become: yes
+  service:
+    name: kubectl
+    state: restarted
+
+# Kubelet Service
+
+
+- name: restart kubelet
+  become: yes
+  service:
+    name: kubelet
+    state: restarted

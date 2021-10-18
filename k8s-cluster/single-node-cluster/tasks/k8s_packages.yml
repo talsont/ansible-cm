@@ -1,0 +1,28 @@
+---
+- name: Install kubeadm 
+  yum:
+    name: kubeadm-{{ kubeadm_ver }}
+    state: present
+    disable_excludes: kubernetes
+
+- name: Install kubectl
+  yum:
+    name: kubectl-{{ kubectl_ver }}
+    state: present
+    disable_excludes: kubernetes
+
+- name: Install kubelet
+  yum:
+    name: kubelet-{{ kubelet_ver }}
+    state: present
+    disable_excludes: kubernetes
+
+- name: Start kubelet
+  service:
+    name: kubelet
+    state: started
+    enabled: yes
+
+
+
+

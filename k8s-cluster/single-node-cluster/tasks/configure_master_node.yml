@@ -1,0 +1,43 @@
+---
+- name: Pulling images required for setting up a Kubernetes cluster
+  shell: kubeadm config images pull
+  register: images
+- debug: var=images.stdout_lines
+
+- name: Resetting kubeadm
+  become: true
+  shell: kubeadm reset -f
+  register: k8s_reset
+- debug: var=k8s_reset.stdout_lines
+
+- name: Reset Iptables
+  become: true
+  shell: iptables -F
+
+- name: Remove Existing Configuration File
+  shell: rm -rf $HOME/.kube
+
+- name: Initializing Kubernetes cluster
+  shell: kubeadm init --control-plane-endpoint "{{ control_plane }}" --upload-certs
+  register: output
+- debug: var=output.stdout_lines
+
+# - name: Storing Logs
+#   local_action: copy content={{ output }} dest=/tmp/k8s-conf.txt 
+
+- name: Setup Kubernetes Configuration File
+  become: true
+  shell: |
+    mkdir -p $HOME/.kube
+    sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
+    sudo chown $(id -u):$(id -g) $HOME/.kube/config
+  register: k8s_config
+- debug: var=k8s_config.stdout_lines
+
+- name: Install Network Add-on
+  become: true
+  shell: kubectl apply -f "{{ flannel_network_yaml }}"
+
+- name: Enable Single Node Cluster
+  become: true
+  shell: kubectl taint nodes --all node-role.kubernetes.io/master-

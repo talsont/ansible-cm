@@ -1,5 +1,19 @@
 ---
-centos_os_ver: 7
+
+# OS Version
+centos_os_ver: 8
+
+# Python Versions
 python2: /usr/bin/python2
-python3: /usr/bin/python3
+python3: /usr/bin/python3.6
+
+# K8S Versions
+kubeadm_ver: 1.21.5
+kubectl_ver: 1.21.5
+kubelet_ver: 1.21.5
+k8s_cni_ver: 0.8.7
+control_plane: "192.168.171.92:6443"
+
+# K8S Network Setup
+flannel_network_yaml: "https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
 # vars file for single-node-cluster

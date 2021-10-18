@@ -31,12 +31,12 @@
 #   when: ansible_facts['os_family'] == "Debian"
 #   apt: name=python-selinux state=present
 
-- name: Put SELinux in permissive mode, logging actions that would be blocked.
+- name: Enable Selinux in Permissive Mode.
   selinux:
     policy: targeted
     state: disabled
-  vars:
-    ansible_python_interpreter: "{{ python2 }}"
+  # vars:
+  #   ansible_python_interpreter: "{{ python3 }}"
 
 - name: Disable Swap
   shell: swapoff -a
@@ -52,14 +52,28 @@
     src: ./files/k8s.conf
     dest: /etc/sysctl.d/k8s.conf
 
+- name: Load br_netfilter module 
+  copy:
+    src: ./files/br-k8s/k8s.conf 
+    dest: /etc/modules-load.d/k8s.conf
+
+- name: sysctl config
+  shell: sysctl --system
+  register: sysctl
+- debug: var=sysctl.stdout_lines
+
+- name: br_netfilter module is loaded
+  shell: lsmod | grep br_netfilter
+  register: br
+- debug: var=br.stdout_lines
+
 - name: Add Kubernetes Repo
   copy:
     src: ./files/kubernetes.repo
     dest: /etc/yum.repos.d/kubernetes.repo
-  notify: yum update
 
-
-
-
-
-    
+- name: yum update
+  yum:
+    name: '*'
+    state: latest
+    exclude: kernel.*, kernel-*

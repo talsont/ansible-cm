@@ -55,7 +55,8 @@
   notify: start docker
 
 - name: Enable docker service
-  systemd:
+  become: true
+  service:
     name: docker
     state: started
     enabled: yes
