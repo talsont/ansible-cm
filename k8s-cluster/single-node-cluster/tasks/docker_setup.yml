@@ -33,28 +33,27 @@
 #   become: yes
 #   notify: start docker
     
-- name: Add Docker yum repository on Centos{{ centos_os_ver }} 
-  # when: ansible_os_family == "RedHat"
-  yum_repository:
-    name: Docker
-    description: Docker Repository
-    file: docker
-    baseurl: https://download.docker.com/linux/centos/{{ centos_os_ver }}/x86_64/stable/
-    enabled: yes
-    gpgcheck: yes
-    gpgkey: https://download.docker.com/linux/centos/gpg
+# - name: Add Docker yum repository on Centos{{ centos_os_ver }} 
+#   # when: ansible_os_family == "RedHat"
+#   yum_repository:
+#     name: Docker
+#     description: Docker Repository
+#     file: docker
+#     baseurl: https://download.docker.com/linux/centos/{{ centos_os_ver }}/x86_64/stable/
+#     enabled: yes
+#     gpgcheck: yes
+#     gpgkey: https://download.docker.com/linux/centos/gpg
 
 - name: Install docker engine on RHEL/CentOS
   # when: ansible_os_family == "RedHat"
   yum:
     name: docker
     state: latest
-  vars:
-    ansible_python_interpreter: "{{ python2 }}"
-  become: yes
+  # vars:
+  #   ansible_python_interpreter: "{{ python2 }}"
   notify: start docker
 
-- name: Enable docker service
+- name: Start Docker Service
   become: true
   service:
     name: docker
