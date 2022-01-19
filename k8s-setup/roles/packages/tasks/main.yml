@@ -1,0 +1,9 @@
+---
+- name: Install Packages needed
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+      - nfs-utils
+      - ca-certificates
+      - curl
