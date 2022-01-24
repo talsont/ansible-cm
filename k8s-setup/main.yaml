@@ -6,3 +6,4 @@
   roles:
   - {role: packages}
   - {role: k8s-configuration}
+  - {role: master-node}

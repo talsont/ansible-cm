@@ -12,9 +12,6 @@
     regexp: '(^/.*swap*)'
     replace: '# \1'
 
-- name: "Pulling all the required images"
-  command: "kubeadm config images pull"
-
 # Changing the Docker Cgroup to systemd from cgroupfs which is supported by Kubernetes!
 # https://harshitdawar.medium.com/launching-a-multi-node-kubernetes-cluster-using-ansible-4a63a542e8af
 # https://www.linkedin.com/pulse/ansible-role-configure-k8s-multi-node-cluster-over-aws-anudeep-nalla
@@ -32,7 +29,7 @@
 
 - name: "Clearing Caches"
   copy:
-    src: ./files/drop_caches
+    src: drop_caches
     dest: /proc/sys/vm/drop_caches
 
 - name: "Letting iptables see bridged traffic"
@@ -48,57 +45,12 @@
 - name: "Refreshing sysctl"
   shell: "sysctl --system"
 
-# - name: "Checking kubectl service"
-#   shell: "kubectl get nodes"
-#   register: status
-#   ignore_errors: true
+- name: "Checking kubectl service"
+  shell: "kubectl get nodes"
+  register: status
+  ignore_errors: true
 
-# # Changing the name of the Host machine to Master
-# - name: Changing the name of the Host machine to Master
-#   shell: hostnamectl set-hostname {{ hostname_master }}
 
-# - name: Initializing Master Node
-#   shell:
-#     cmd: kubeadm --control-plane-endpoint "192.168.171.61:6443" --upload-certs
-#   register: KubeAdm_status
-#   ignore_errors: yes
-#   debug:
-#     msg: "{{ KubeAdm_status }}"
-
- # Creating the required directory after Kubeadm init successful
-- name: Creating the required directories
-  file:
-    path: "mkdir -p $HOME/.kube"
-    state: directory
-  register: KubeAdm_Commands_status
-  debug:
-    msg: "{{ KubeAdm_Commands_status }}"
-
-# Copying the required stuff after Kubeadm init successful
-- name: Copy command of kubeadm
-  shell: 
-    cmd: sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  register: KubeAdm_CP_Commands_Status
-  debug:
-    msg: "{{ KubeAdm_CP_Commands_Status }}"
-
-# Changing the ownership of the directories
-- name: Changing ownership of directories
-  shell:
-    cmd: sudo chown $(id -u):$(id -g) $HOME/.kube/config
-  register: KubeAdm_Chaning_Ownership_Commands_status
-  debug:
-    msg: "{{ KubeAdm_Chaning_Ownership_Commands_status }}"
-
-- name: Adding Weave Network
-  shell:
-    cmd: kubectl apply -f https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')
-  register: Weavenet_status
-  debug:
-    msg: "{{ Weavenet_status }}"
-
-- name: "Control plane node isolation"
-  shell: kubectl taint nodes --all node-role.kubernetes.io/master-
    
 
 
