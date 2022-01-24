@@ -1,2 +1,9 @@
 ---
-# vars file for packages
+
+# Centos Version
+centos_version: 7
+
+# User Credentials
+# user: root
+# group: root
+
