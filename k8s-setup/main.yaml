@@ -1,5 +1,8 @@
 ---
 - hosts: master
   become: yes
+  vars_files:
+    - main.yaml
   roles:
   - {role: packages}
+  - {role: k8s-configuration}

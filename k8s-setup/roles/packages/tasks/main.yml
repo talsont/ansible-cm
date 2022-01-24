@@ -1,25 +1,11 @@
 ---
-- name: Install Packages needed
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items:
-      - nfs-utils
-      - ca-certificates
-      - curl
-
-- name: Adding Repository details in Kuberntes Repo File
-  copy:
-    src: ./files/kubernetes.repo
-    dest: /etc/yum.repos.d
-
 # Configuring Yum for Epel Packages
 - name: Configure the Yum with epel
   yum_repository:
     name: epel
     file: epel
     description: Configure the epel repo
-    baseurl: https://dl.fedoraproject.org/pub/epel/7/x86_64/
+    baseurl: https://dl.fedoraproject.org/pub/epel/{{ centos_ver }}/x86_64/
     gpgcheck: no
   register: epel_status
 
@@ -35,13 +21,93 @@
     name: docker-ce
     file: docker-ce
     description: Configure the Docker Community Edition repo
-    baseurl: https://download.docker.com/linux/centos/7/x86_64/stable/
+    baseurl: https://download.docker.com/linux/centos/{{ centos_ver }}/x86_64/stable/
     gpgcheck: no
   register: docker_ce_status
 
 - name: Docker-CE Status
   debug:
     msg: "Did Docker Configuration Failed => {{  docker_ce_status.failed }}"
+
+# Configuring Yum for the kubernetes Repository
+- name: Configuring kubernetes Yum Repository
+  yum_repository:
+    name: kubernetes
+    file: kubernetes
+    description: Configure the kubernetes repo
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el{{ centos_ver }}-$basearch
+    gpgcheck: yes
+    enabled: 1
+    repo_gpgcheck: 1
+    exclude: 
+      - kubelet
+      - kubeadm
+      - kubectl
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  register: kubernetes_status
+
+- name: Kubernetes Repo Status
+  debug:
+    msg: "Did Kubernetes Repo Configuration Failed => {{  kubernetes_status.failed }}"
+
+# Install System Packages
+- name: Install Packages needed
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+      - nfs-utils
+      - ca-certificates
+      - curl
+      - lvm2
+
+# Install yum-utils (Which provides yum-config-manager utility)
+- name: Yum Config Manager.
+  shell: yum install -y yum-utils
+
+- name: Install Docker
+  yum: 
+    name: docker-ce
+    state: present
+
+- name: Starting and Enabling Docker Service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Install kubeadm 
+  yum:
+    name: kubeadm-{{ kubeadm_ver }}
+    state: present
+    disable_excludes: kubernetes
+
+- name: Install kubectl
+  yum:
+    name: kubectl-{{ kubectl_ver }}
+    state: present
+    disable_excludes: kubernetes
+
+- name: Install kubelet
+  yum:
+    name: kubelet-{{ kubelet_ver }}
+    state: present
+    disable_excludes: kubernetes
+
+- name: Start kubelet
+  service:
+    name: kubelet
+    state: started
+    enabled: yes
+
+- name: just force systemd to reread configs (2.4 and above)
+  systemd: daemon_reload=yes
+
+
+
+  
+  
+
 
 
 
