@@ -24,7 +24,6 @@
   debug:
     msg: "{{ K8s_Initialize_output }}"
     
-
 # Creating the required directory after Kubeadm init successful
 - name: Creating the required directories
   file:
