@@ -1,4 +1,14 @@
 ---
+- name: Disabling Firewall Daemon
+  service:
+    name: firewalld
+    state: stopped
+  register: firewalld_status
+
+- name: Firewall Daemon status
+  debug:
+    msg: "{{ firewalld_status }}"
+
 - name: Disable Selinux
   selinux: 
     state: disabled
@@ -12,11 +22,17 @@
     regexp: '(^/.*swap*)'
     replace: '# \1'
 
+- name: Reloading Systemd Driver 
+  systemd: 
+    daemon_reload: yes
+  register: SD_status
+
+
 # Changing the Docker Cgroup to systemd from cgroupfs which is supported by Kubernetes!
 # https://harshitdawar.medium.com/launching-a-multi-node-kubernetes-cluster-using-ansible-4a63a542e8af
 # https://www.linkedin.com/pulse/ansible-role-configure-k8s-multi-node-cluster-over-aws-anudeep-nalla
  
-- name: "Changing the Cgroup driver of docker to 'systemd'"
+- name: Changing the Cgroup driver of docker to 'systemd'
   copy: 
     src: ./files/daemon.json
     dest: /etc/docker/daemon.json
@@ -26,13 +42,9 @@
     name: docker
     state: restarted
     enabled: yes
+  register: DSR_Status
 
-- name: "Clearing Caches"
-  copy:
-    src: drop_caches
-    dest: /proc/sys/vm/drop_caches
-
-- name: "Letting iptables see bridged traffic"
+- name: Letting iptables see bridged traffic
   copy:
     src: ./files/k8s.conf
     dest: /etc/sysctl.d/k8s.conf
@@ -44,11 +56,11 @@
 
 - name: "Refreshing sysctl"
   shell: "sysctl --system"
+  register: Sysctl_Status
 
-- name: "Checking kubectl service"
-  shell: "kubectl get nodes"
-  register: status
-  ignore_errors: true
+- name: Sysctl status
+  debug: 
+    msg: "{{ Sysctl_Status }}"
 
 
    

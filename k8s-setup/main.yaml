@@ -4,6 +4,6 @@
   vars_files:
     - main.yaml
   roles:
-  - {role: packages}
-  - {role: k8s-configuration}
+  # - {role: packages}
+  # - {role: k8s-configuration}
   - {role: master-node}

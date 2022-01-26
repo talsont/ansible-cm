@@ -8,35 +8,47 @@
 
 - name: Resetting kubeadm
   shell: kubeadm reset -f
-  register: output
+  register: kubeadm_reset_output
+
+- name: Resetting Kubeadm status
+  debug:
+    msg: "{{ kubeadm_reset_output }}"
 
 - name: Initializing Kubernetes Cluster
-  shell: kubeadm init --control-plane-endpoint "{{ ad_addr }}" --upload-certs
-  register: output
-  # ignore_errors: yes
-  # debug:
-  #   msg: "{{ KubeAdm_status }}"
+  shell: 
+    cmd: kubeadm init --control-plane-endpoint "{{ ad_addr }}" --upload-certs
+  register: K8s_Initialize_output
+  ignore_errors: yes
 
- # Creating the required directory after Kubeadm init successful
-# - name: Creating the required directories
-#   file:
-#     path: "mkdir -p $HOME/.kube"
-#     state: directory
-#   register: KubeAdm_Commands_status
-#   debug:
-#     msg: "{{ KubeAdm_Commands_status }}"
+- name: Kubernetes Cluster Initializing status
+  debug:
+    msg: "{{ K8s_Initialize_output }}"
+    
+
+# Creating the required directory after Kubeadm init successful
+- name: Creating the required directories
+  file:
+    path: "mkdir -p $HOME/.kube"
+    state: directory
+  register: KubeAdm_Output
+
+- name: KubeAdm Commands Status
+  debug:
+    msg: "{{ KubeAdm_Output }}"
 
 - name: Storing Logs and Generated token for future purpose.
-  local_action: copy content={{ output.stdout }} dest={{ token_file }}
+  local_action: copy content={{ KubeAdm_Output.stdout }} dest={{ k8s_token_file }}
   become: False
 
-# # Copying the required stuff after Kubeadm init successful
-# - name: Copy command of kubeadm
-#   shell: 
-#     cmd: cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-#   register: KubeAdm_CP_Commands_Status
-#   debug:
-#     msg: "{{ KubeAdm_CP_Commands_Status }}"
+# Copying the required stuff after Kubeadm init successful
+- name: Copy k8s configuration file
+  shell: 
+    cmd: cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  register: KubeAdm_CP_Commands_Status
+
+- name: Copying Command Status
+  debug:
+    msg: "{{ KubeAdm_CP_Commands_Status }}"
 
 - name: Copying required files
   shell: |
@@ -44,20 +56,24 @@
     sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-# # Changing the ownership of the directories
-# - name: Changing ownership of directories
-#   shell:
-#     cmd: chown $(id -u):$(id -g) $HOME/.kube/config
-#   register: KubeAdm_Chaning_Ownership_Commands_status
-#   debug:
-#     msg: "{{ KubeAdm_Chaning_Ownership_Commands_status }}"
+# Changing the ownership of the directories
+- name: Changing ownership of directories
+  shell:
+    cmd: chown $(id -u):$(id -g) $HOME/.kube/config
+  register: KubeAdm_Chaning_Ownership_Commands_status
 
-# - name: Adding Weave Network
-#   shell:
-#     cmd: kubectl apply -f https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')
-#   register: Weavenet_status
-#   debug:
-#     msg: "{{ Weavenet_status }}"
+- name: Changing Ownership of directories Status
+  debug:
+    msg: "{{ KubeAdm_Chaning_Ownership_Commands_status }}"
+
+- name: Adding Weave Network
+  shell:
+    cmd: kubectl apply -f https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')
+  register: Weavenet_status
+
+- name: Adding Weave Network Status
+  debug:
+    msg: "{{ Weavenet_status }}"
 
 - name: "Control plane node isolation"
   shell: kubectl taint nodes --all node-role.kubernetes.io/master-
