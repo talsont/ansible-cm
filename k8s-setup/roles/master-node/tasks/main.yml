@@ -69,9 +69,9 @@
   debug:
     msg: "{{ Weavenet_status }}"
 
-- name: Sleep for 15 seconds and continue with play
+- name: Sleep for 30 seconds and continue with play
   pause: 
-    seconds: 15
+    seconds: 30
 
 - name: "Control plane node isolation"
   shell: kubectl taint nodes --all node-role.kubernetes.io/master-
