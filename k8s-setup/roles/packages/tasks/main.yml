@@ -39,10 +39,10 @@
     gpgcheck: yes
     enabled: 1
     repo_gpgcheck: 1
-    exclude: 
-      - kubelet
-      - kubeadm
-      - kubectl
+    # exclude: 
+    #   - kubelet
+    #   - kubeadm
+    #   - kubectl
     gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
   register: kubernetes_status
 
@@ -50,20 +50,25 @@
   debug:
     msg: "Did Kubernetes Repo Configuration Failed => {{  kubernetes_status.failed }}"
 
+- name: Update Yum Packages
+  yum: update_cache=yes
+
 # Install System Packages
 - name: Install Packages needed
   package:
     name: "{{ item }}"
-    state: present
+    state: latest
   with_items:
+      - yum-utils
       - nfs-utils
+      - device-mapper-persistent-data
       - ca-certificates
       - curl
       - lvm2
 
-# Install yum-utils (Which provides yum-config-manager utility)
-- name: Yum Config Manager.
-  shell: yum install -y yum-utils
+# # Install yum-utils (Which provides yum-config-manager utility)
+# - name: Yum Config Manager.
+#   shell: yum install -y 
 
 - name: Install Docker
   yum: 
@@ -76,9 +81,9 @@
     state: started
     enabled: yes
 
-- name: Install kubeadm 
+- name: Install kubelet
   yum:
-    name: kubeadm-{{ kubeadm_ver }}
+    name: kubelet-{{ kubelet_ver }}
     state: present
     disable_excludes: kubernetes
 
@@ -86,13 +91,11 @@
   yum:
     name: kubectl-{{ kubectl_ver }}
     state: present
-    disable_excludes: kubernetes
 
-- name: Install kubelet
+- name: Install kubeadm 
   yum:
-    name: kubelet-{{ kubelet_ver }}
+    name: kubeadm-{{ kubeadm_ver }}
     state: present
-    disable_excludes: kubernetes
 
 - name: Start kubelet
   service:

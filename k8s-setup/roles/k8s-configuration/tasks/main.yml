@@ -22,27 +22,15 @@
     regexp: '(^/.*swap*)'
     replace: '# \1'
 
-- name: Reloading Systemd Driver 
-  systemd: 
-    daemon_reload: yes
-  register: SD_status
-
 
 # Changing the Docker Cgroup to systemd from cgroupfs which is supported by Kubernetes!
 # https://harshitdawar.medium.com/launching-a-multi-node-kubernetes-cluster-using-ansible-4a63a542e8af
 # https://www.linkedin.com/pulse/ansible-role-configure-k8s-multi-node-cluster-over-aws-anudeep-nalla
  
-- name: Changing the Cgroup driver of docker to 'systemd'
-  copy: 
-    src: ./files/daemon.json
-    dest: /etc/docker/daemon.json
-
-- name: "Restarting Docker"
-  service: 
-    name: docker
-    state: restarted
-    enabled: yes
-  register: DSR_Status
+# - name: Changing the Cgroup driver of docker to 'systemd'
+#   copy: 
+#     src: ./files/daemon.json
+#     dest: /etc/docker/daemon.json
 
 - name: Letting iptables see bridged traffic
   copy:

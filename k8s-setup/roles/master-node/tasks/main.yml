@@ -3,8 +3,8 @@
 - name: Changing the name of the Host machine to Master
   shell: hostnamectl set-hostname {{ hostname_master }}
 
-- name: Pulling images required for setting up a Kubernetes cluster
-  shell: kubeadm config images pull
+# - name: Pulling images required for setting up a Kubernetes cluster
+#   shell: kubeadm config images pull
 
 - name: Resetting kubeadm
   shell: kubeadm reset -f
@@ -23,31 +23,6 @@
 - name: Kubernetes Cluster Initializing status
   debug:
     msg: "{{ K8s_Initialize_output }}"
-    
-# Creating the required directory after Kubeadm init successful
-- name: Creating the required directories
-  file:
-    path: "mkdir -p $HOME/.kube"
-    state: directory
-  register: KubeAdm_Output
-
-- name: KubeAdm Commands Status
-  debug:
-    msg: "{{ KubeAdm_Output }}"
-
-- name: Storing Logs and Generated token for future purpose.
-  local_action: copy content={{ KubeAdm_Output.stdout }} dest={{ k8s_token_file }}
-  become: False
-
-# Copying the required stuff after Kubeadm init successful
-- name: Copy k8s configuration file
-  shell: 
-    cmd: cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  register: KubeAdm_CP_Commands_Status
-
-- name: Copying Command Status
-  debug:
-    msg: "{{ KubeAdm_CP_Commands_Status }}"
 
 - name: Copying required files
   shell: |
@@ -55,15 +30,35 @@
     sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-# Changing the ownership of the directories
-- name: Changing ownership of directories
-  shell:
-    cmd: chown $(id -u):$(id -g) $HOME/.kube/config
-  register: KubeAdm_Chaning_Ownership_Commands_status
+# - name: Switch cgroup Driver from Systemd to cgroupfs
+#   shell: "sed -i 's/cgroupDriver: systemd/cgroupDriver: cgroupfs/g' /var/lib/kubelet/config.yaml"
+#   register: Switch_Systemd_To_Cgroupfs
 
-- name: Changing Ownership of directories Status
-  debug:
-    msg: "{{ KubeAdm_Chaning_Ownership_Commands_status }}"
+# - name: Switch cgroup Driver from Systemd to cgroupfs Status
+#   debug:
+#     msg: "{{ Switch_Systemd_To_Cgroupfs }}"
+
+# - name: Reloading Systemd Driver 
+#   systemd: 
+#     daemon_reload: yes
+#   register: SD_status
+
+# - name: "Restarting Docker"
+#   service: 
+#     name: docker
+#     state: restarted
+#     enabled: yes
+#   register: DSR_Status
+
+# - name: Restarting Kubelet
+#   service:
+#     name: kubelet 
+#     state: restarted
+#     enabled: yes
+
+# - name: Storing Logs and Generated token for future purpose.
+#   local_action: copy content={{ KubeAdm_Output.stdout }} dest={{ k8s_token_file }}
+#   become: False
 
 - name: Adding Weave Network
   shell:
@@ -74,5 +69,18 @@
   debug:
     msg: "{{ Weavenet_status }}"
 
+- name: Sleep for 15 seconds and continue with play
+  pause: 
+    seconds: 15
+
 - name: "Control plane node isolation"
   shell: kubectl taint nodes --all node-role.kubernetes.io/master-
+
+- name: Show Running Pods
+  shell:
+    cmd: kubectl get pods --all-namespaces
+  register: show_pods
+
+- name: show pods
+  debug:
+    msg: "{{ show_pods }}"
