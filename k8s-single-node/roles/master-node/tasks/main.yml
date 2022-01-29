@@ -81,6 +81,6 @@
     cmd: kubectl get pods --all-namespaces
   register: show_pods
 
-- name: show pods
+- name: Show Running Pods
   debug:
     msg: "{{ show_pods }}"
