@@ -1,0 +1,24 @@
+---
+- name: Resetting kubeadm
+  shell: kubeadm reset -f
+  register: kubeadm_reset_output
+
+- name: Clear all IP Tables Rules
+  shell: iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+  register: flush_iptables
+
+- name: Delete K8S Contents
+  shell: rm -rf /etc/kubernetes && rm -rf /etc/cni/net.d && rm -rf ~/.kube
+  register: delete_k8s_contents
+
+- name: Flush Iptables 
+  debug:
+    msg: "{{ flush_iptables }}"
+    
+- name: Resetting Kubeadm status
+  debug:
+    msg: "{{ kubeadm_reset_output }}"
+
+- name: Delete K8S Contents
+  debug:
+    msg: "{{ delete_k8s_contents }}"
