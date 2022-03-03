@@ -10,7 +10,6 @@
   shell: 
     cmd: kubeadm init --control-plane-endpoint "{{ ad_addr }}" --upload-certs
   register: K8s_Initialize_output
-  ignore_errors: yes
 
 - name: Kubernetes Cluster Initializing status
   debug:

@@ -10,6 +10,6 @@ containerd.io-ver: 1.4.9
 docker-ce-cli-ver: 20.10.9
 
 # K8S Versions
-kubeadm_ver: 1.21.5-0
-kubectl_ver: 1.21.5-0
-kubelet_ver: 1.21.5-0
+kubeadm_ver: 1.23.1-0
+kubectl_ver: 1.23.1-0
+kubelet_ver: 1.23.1-0
