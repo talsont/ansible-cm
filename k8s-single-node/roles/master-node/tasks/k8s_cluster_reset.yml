@@ -8,7 +8,7 @@
   register: flush_iptables
 
 - name: Delete K8S Contents
-  shell: rm -rf /etc/kubernetes && rm -rf /etc/cni/net.d && rm -rf ~/.kube
+  shell: rm -rf /etc/kubernetes && rm -rf /etc/cni/net.d && rm -rf ~/.kube && rm -rf /var/lib/etcd
   register: delete_k8s_contents
 
 - name: Flush Iptables 
