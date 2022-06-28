@@ -1,6 +1,6 @@
 ---
 - hosts: master
-  become: yes
+  become: true
   vars_files:
     - main.yaml
   roles:

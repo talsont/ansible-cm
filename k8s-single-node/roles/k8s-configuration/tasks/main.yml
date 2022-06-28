@@ -1,13 +1,13 @@
 ---
-- name: Disabling Firewall Daemon
-  service:
-    name: firewalld
-    state: stopped
-  register: firewalld_status
+# - name: Disabling Firewall Daemon
+#   service:
+#     name: firewalld
+#     state: stopped
+#   register: firewalld_status
 
-- name: Firewall Daemon status
-  debug:
-    msg: "{{ firewalld_status }}"
+# - name: Firewall Daemon status
+#   debug:
+#     msg: "{{ firewalld_status }}"
 
 - name: Disable Selinux
   selinux: 
